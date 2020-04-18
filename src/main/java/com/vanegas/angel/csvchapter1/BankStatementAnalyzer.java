@@ -34,18 +34,18 @@ public class BankStatementAnalyzer {
     
     private static void collectSummary(BankStatementProcessor processor){
         System.out.println("The total for all transactions is: " 
-                + processor.calculateTotalAmount());
+                + processor.summarizeTransactions((acc, trans)-> 
+                acc + trans.getAmount()));
         
-        var coop = processor.findTransactions(trans -> trans.getDate().getMonth() == Month.JANUARY);
         System.out.println("The transactions for January is: " 
-                + new BankStatementProcessor(coop).calculateTotalAmount());
+                + processor.calculateTotalInMonth(Month.JANUARY));
         
-        var poop = processor.findTransactions(trans -> trans.getDate().getMonth() == Month.FEBRUARY);
         System.out.println("The transactions for February is: " 
-                + new BankStatementProcessor(poop).calculateTotalAmount());
+                + processor.calculateTotalInMonth(Month.FEBRUARY));
         
         var soop = processor.findTransactions(trans -> "Salary".equals(trans.getDescription()));
         System.out.println("The total salary received is: " 
-                + new BankStatementProcessor(soop).calculateTotalAmount());
+                + new BankStatementProcessor(soop).summarizeTransactions((acc, trans) ->
+                acc + trans.getAmount()));
     }
 }

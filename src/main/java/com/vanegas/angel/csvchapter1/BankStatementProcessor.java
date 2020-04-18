@@ -20,13 +20,25 @@ public class BankStatementProcessor {
         this.bankTransactions = bankTransactions;
     }
     
-    public double calculateTotalAmount(){
-       return bankTransactions.stream().map(trans -> trans.getAmount())
-               .reduce(0d, (acc, amount) -> acc + amount);
+    public double summarizeTransactions(final BankTransactionSummarizer bankTransSummary){
+        double result = 0;
+        for(final BankTransaction bankTransaction : bankTransactions){
+            result = bankTransSummary.summarize(result, bankTransaction);
+        }
+        return result;
     }
     
-    public List<BankTransaction> findTransactions(BankTransactionFilter transactionFilter){
+    public double calculateTotalInMonth(final Month month){
+       return summarizeTransactions((acc, trans) -> 
+            month == trans.getDate().getMonth() ? acc + trans.getAmount() : acc);
+    }
+    
+    public List<BankTransaction> findTransactions(final BankTransactionFilter transactionFilter){
         return bankTransactions.stream().filter(trans -> transactionFilter.test(trans))
                 .collect(toList());
+    }
+    
+    public List<BankTransaction> findTransactionsGreaterThanEquals(final double amount){
+        return findTransactions(trans -> trans.getAmount() >= amount);
     }
 }
