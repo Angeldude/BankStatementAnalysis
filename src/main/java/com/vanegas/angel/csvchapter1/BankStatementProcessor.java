@@ -6,6 +6,7 @@
 package com.vanegas.angel.csvchapter1;
 
 import java.time.Month;
+import java.util.DoubleSummaryStatistics;
 import java.util.List;
 import static java.util.stream.Collectors.toList;
 
@@ -18,6 +19,17 @@ public class BankStatementProcessor {
     
     public BankStatementProcessor(List<BankTransaction> bankTransactions){
         this.bankTransactions = bankTransactions;
+    }
+    
+    public SummaryStatistics summarizeTransactions(){
+        DoubleSummaryStatistics stats = bankTransactions.stream()
+                .mapToDouble(BankTransaction::getAmount)
+                .summaryStatistics();
+        
+        return new SummaryStatistics(stats.getSum(),
+                                     stats.getMax(),
+                                     stats.getMin(),
+                                     stats.getAverage());
     }
     
     public double summarizeTransactions(final BankTransactionSummarizer bankTransSummary){

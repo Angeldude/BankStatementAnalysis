@@ -18,34 +18,23 @@ public class BankStatementAnalyzer {
     private static final BankStatementCSVParser bankStatementParser = 
                 new BankStatementCSVParser();
     
-    public static void main(final String... args) throws IOException {
+    public void analyze(
+            final String filename
+            , final BankStatementCSVParser parser
+            , final Exporter exporter) throws IOException {
         
-        final Path path = Paths.get(RESOURCES + args[0]);
+        final Path path = Paths.get(RESOURCES + filename);
         final List<String> lines = Files.readAllLines(path);
         
         final List<BankTransaction> bankTransactions = 
-                bankStatementParser.parseLinesFromCSV(lines);
+                parser.parseLinesFromCSV(lines);
         
         final BankStatementProcessor bankStatementProcessor =
                 new BankStatementProcessor(bankTransactions);
         
-        collectSummary(bankStatementProcessor);
-    }
-    
-    private static void collectSummary(BankStatementProcessor processor){
-        System.out.println("The total for all transactions is: " 
-                + processor.summarizeTransactions((acc, trans)-> 
-                acc + trans.getAmount()));
+        final SummaryStatistics summaryStatistics = 
+                bankStatementProcessor.summarizeTransactions();
         
-        System.out.println("The transactions for January is: " 
-                + processor.calculateTotalInMonth(Month.JANUARY));
-        
-        System.out.println("The transactions for February is: " 
-                + processor.calculateTotalInMonth(Month.FEBRUARY));
-        
-        var soop = processor.findTransactions(trans -> "Salary".equals(trans.getDescription()));
-        System.out.println("The total salary received is: " 
-                + new BankStatementProcessor(soop).summarizeTransactions((acc, trans) ->
-                acc + trans.getAmount()));
+        System.out.println(exporter.export(summaryStatistics));
     }
 }

@@ -27,7 +27,7 @@ public class BankStatementCSVParser {
         return new BankTransaction(date, amount, description);
     }
     
-    public List<BankTransaction> parseLinesFromCSV(List<String> lines){
+    public List<BankTransaction> parseLinesFromCSV(final List<String> lines){
         return lines.stream().map(this::parseFromCSV).collect(toList());
     }
 }
